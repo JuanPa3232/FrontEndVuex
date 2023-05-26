@@ -1,25 +1,32 @@
 <template>
-    <div class="flex flex-col p-8">
-        <div class="flex justify-center gap-8 mt-5" >
-            <router-link :to="{name: 'byLetter', params: {letter}}" v-for="letter of letters" :key="letter">
-                {{ letter }}
-            </router-link>
+    <div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 p-8 ">
+            <div v-for="meal of meals" :key="meal.idMeal"
+                class="bg-white shadow-md rounded-xl hover:bg-green-500 transition-colors font-sans hover:scale-105">
+                <router-link :to="{ name: 'mealDetails', params: { id: meal.idMeal } }">
+                    <img :src="meal.strMealThumb" :alt="strMeal" class="rounded-t-xl w-full h-52 object-cover">
+                    <div class="p-3">
+                        <h3 class="font-semibold">{{ meal.strMeal }}</h3>
+                    </div>
+                </router-link>
+            </div>
         </div>
-        
     </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import store from '../store'
-import axiosClient from '../axiosClient.js'
+import { computed, onMounted, ref } from 'vue';
+import store from '../store';
+import axiosClient from '../axiosClient';
 
+const meals = ref([]);
 
-const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split("");
-const ingredients = ref([])
-onMounted(async() => {
-    const response = await axiosClient.get('/list.php?i=list')
-    console.log(response.data)
-    ingredients.value = response.data
+onMounted(async () => {
+    for (let i = 0; i <= 5; i++) {
+        axiosClient
+            .get(`random.php`)
+            .then(({ data }) => meals.value.push(data.meals[0]));
+    }
 })
+
 </script>
